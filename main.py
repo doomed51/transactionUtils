@@ -2,7 +2,8 @@
 # This script is to explore the questrade transaction file 
 
 #TODO for the closed positions, find ( net amount / sum of all buys * 100 ) i.e. the P&L % 
-# TODO plot the distribution of P&L 
+# DONE plot the distribution of P&L 
+# TODO print closed positions into an excel sheet
 # TODO find if there is correlation between P&L and transaction date 
 import numpy as np
 
@@ -26,6 +27,20 @@ print("")
 dropColumns = ['Activity Type', 'Settlement Date', 'Account Type', 'Account #', 'Gross Amount', 'Description']
 
 transactionsDF.drop(columns = dropColumns, inplace=True)
+#####
+# util function 
+##
+# returns df with columns: Symbol, Quantity, 
+# and Net Amount 
+#####
+def getClosedPositions():
+    # create a df with symbol, sum of quantity, and sum of net amount
+    sumQuantityOfAllSymbols = ( transactionsDF.groupby('Symbol')[['Quantity', 'Net Amount']]
+    .sum()
+    )
+
+    # Return the Symbols that have no open positions 
+    return sumQuantityOfAllSymbols.loc[sumQuantityOfAllSymbols['Quantity'] == 0]
 
 
 #####
@@ -60,13 +75,8 @@ def findTransactionPandLByTicker(myTickerArray):
 # and figure out their P&L 
 ######
 def findPandLOfClosedPositions():
-    # create a df with symbol, sum of quantity, and sum of net amount
-    sumQuantityOfAllSymbols = ( transactionsDF.groupby('Symbol')[['Quantity', 'Net Amount']]
-    .sum()
-    )
-
     # Select the Symbols that have no open positions 
-    closedPositions = sumQuantityOfAllSymbols.loc[sumQuantityOfAllSymbols['Quantity'] == 0]
+    closedPositions = getClosedPositions()
 
     # print closed positions
     print(closedPositions.sort_values('Net Amount', ascending=False).head(15))
@@ -84,22 +94,20 @@ def findPandLOfClosedPositions():
 #####
 def histogram_closedPositionsPandL():
     print('Graphing!!')
-    # create a df with symbol, sum of quantity, and sum of net amount
-    sumQuantityOfAllSymbols = ( transactionsDF.groupby('Symbol')[['Quantity', 'Net Amount']]
-    .sum()
-    )
 
     # Select the Symbols that have no open positions 
-    closedPositions = sumQuantityOfAllSymbols.loc[sumQuantityOfAllSymbols['Quantity'] == 0]
+    closedPositions = getClosedPositions()
 
-    closedPositions['Net Amount'].plot.hist(bins=20, alpha=0.5)
+    closedPositions['Net Amount'].plot.hist(bins=30, alpha=0.5)
     plt.show()
 
-    ###############
-    ###############
 
-    
-    
+######
+# print closedpositions into an excel 
+######
+
+def printClosedPositionsPandL():
+    print("derp")
 
 #####
 #END
@@ -108,4 +116,5 @@ def histogram_closedPositionsPandL():
 
 #findTransactionPandLByTicker(tickerArray)
 #findPandLOfClosedPositions()
-histogram_closedPositionsPandL()
+#histogram_closedPositionsPandL()
+print(getClosedPositions().head())
