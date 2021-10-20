@@ -1,6 +1,10 @@
 # README 
 # This script is to explore the questrade transaction file 
 
+#TODO for the closed positions, find ( net amount / sum of all buys * 100 ) i.e. the P&L % 
+# TODO plot the distribution of P&L 
+# TODO find if there is correlation between P&L and transaction date 
+
 from numpy import true_divide, where
 import pandas as pd 
 
@@ -55,15 +59,12 @@ def findTransactionPandLByTicker(myTickerArray):
 ######
 def findPandLOfClosedPositions():
     # create a df with symbol, sum of quantity, and sum of net amount
-    sumQuantityOfAllSymbols = ( transactionsDF.groupby('Symbol')['Quantity', 'Net Amount']
+    sumQuantityOfAllSymbols = ( transactionsDF.groupby('Symbol')[['Quantity', 'Net Amount']]
     .sum()
     )
 
     # Select the Symbols that have no open positions 
     closedPositions = sumQuantityOfAllSymbols.loc[sumQuantityOfAllSymbols['Quantity'] == 0]
-
-    #TODO for the closed positions, find ( net amount / sum of all buys * 100 ) 
-
 
     # print closed positions
     print(closedPositions.sort_values('Net Amount', ascending=False).head(15))
