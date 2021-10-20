@@ -4,9 +4,11 @@
 #TODO for the closed positions, find ( net amount / sum of all buys * 100 ) i.e. the P&L % 
 # TODO plot the distribution of P&L 
 # TODO find if there is correlation between P&L and transaction date 
+import numpy as np
 
 from numpy import true_divide, where
 import pandas as pd 
+import matplotlib.pyplot as plt
 
 filePath = "F:/workbench/Transaction Analysis/venv/Activities_for_01Sep2021_to_18Oct2021.xlsx"
 tickerArray = ['ANY', 'BA', 'CLWR']
@@ -77,6 +79,27 @@ def findPandLOfClosedPositions():
     print("Net of all closed positions:") 
     print(closedPositions['Net Amount'].sum())
 
+#####
+# plot a histogram of closed position returns 
+#####
+def histogram_closedPositionsPandL():
+    print('Graphing!!')
+    # create a df with symbol, sum of quantity, and sum of net amount
+    sumQuantityOfAllSymbols = ( transactionsDF.groupby('Symbol')[['Quantity', 'Net Amount']]
+    .sum()
+    )
+
+    # Select the Symbols that have no open positions 
+    closedPositions = sumQuantityOfAllSymbols.loc[sumQuantityOfAllSymbols['Quantity'] == 0]
+
+    closedPositions['Net Amount'].plot.hist(bins=20, alpha=0.5)
+    plt.show()
+
+    ###############
+    ###############
+
+    
+    
 
 #####
 #END
@@ -84,4 +107,5 @@ def findPandLOfClosedPositions():
 
 
 #findTransactionPandLByTicker(tickerArray)
-findPandLOfClosedPositions()
+#findPandLOfClosedPositions()
+histogram_closedPositionsPandL()
