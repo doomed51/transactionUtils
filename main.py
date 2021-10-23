@@ -70,7 +70,7 @@ print("")
 print("##################################################")
 print("##################################################")
 print("##################################################")
-print("")
+print("___________________________________________________")
 print("")
 
 #####
@@ -79,7 +79,6 @@ print("")
 # returns df with columns: Symbol, sum of Quantity, 
 # sum of Net Amount, and the date of the first transaction
 #####
-# TODO take out the dividend records 
 def getClosedPositions():
     
     sumQuantityOfAllSymbols = ( transactionsDF
@@ -132,17 +131,31 @@ def findTransactionPandLByTicker(myTickerArray):
 def findPandLOfClosedPositions():
     # Select the Symbols that have no open positions 
     closedPositions = getClosedPositions()
+    print("###################################################")
+    print("###################################################")
+    print("###################################################")
+    print("")
+    print("            Closed Positions Statistics")
+    print("")
+    print("")
 
+    #Group closed returns by year
+    closedPositions_annual = closedPositions.groupby(closedPositions['First Transaction'].map(lambda x: x.year)).sum(['Net Amount'])
+    
     # print closed positions
-    print(closedPositions.sort_values('Net Amount', ascending=False).head(15))
-
+    print(closedPositions_annual)
     print("")
-    print("###########")
-    print("")
-
+    
     # print the net P/L from ALL closed positions  
-    print("Net of all closed positions:") 
+    print(">> Net of all closed positions: <<") 
     print(closedPositions['Net Amount'].sum())
+    print("")
+    print("")
+    print("")
+    print("###################################################")
+    print("###################################################")
+    print("###################################################")
+    print("___________________________________________________")
 
 #####
 # plot a histogram of closed position returns 
@@ -244,16 +257,12 @@ def findPortfolioStats():
 
 #findTransactionPandLByTicker(tickerArray)
 
-#findPandLOfClosedPositions()
+findPandLOfClosedPositions()
 
 #histogram_closedPositionsPandL()
-
-#print(getClosedPositions().head())
 
 #printToExecl_ClosedPositionsPandL()
 
 #findTradingReturn(60)
 
 #findPortfolioStats()
-
-print(getClosedPositions())
