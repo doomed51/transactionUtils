@@ -45,6 +45,8 @@ print("loading file: " + filepath_investmentSummary)
 print("")
 
 balancesDF = pd.read_excel(filepath_investmentSummary, 'Balances')
+positionsDF = pd.read_excel(filepath_investmentSummary, 'Positions')
+
 
 print(">> File loaded successfully!!")
 print("")
@@ -240,7 +242,9 @@ def findPortfolioStats():
     returnOnContribution = (totalEquity - totalContributions[0]) / totalContributions[0] * 100
 
     #TODO '%' formatting on output
-    print('Return on Contribution(%)', returnOnContribution )
+    print('Return on Contribution(%):', returnOnContribution )
+    print('           Total Holdings:', positionsDF['Equity Symbol'].count())
+    print('                 Open P&L:', positionsDF['Profit And Loss'].sum())
 
     print("")
     print("")
@@ -257,7 +261,7 @@ def findPortfolioStats():
 
 #findTransactionPandLByTicker(tickerArray)
 
-findPandLOfClosedPositions()
+#findPandLOfClosedPositions()
 
 #histogram_closedPositionsPandL()
 
@@ -265,4 +269,4 @@ findPandLOfClosedPositions()
 
 #findTradingReturn(60)
 
-#findPortfolioStats()
+findPortfolioStats()
