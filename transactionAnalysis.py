@@ -4,16 +4,18 @@
 # DONE for the closed positions, find ( net amount / sum of all buys * 100 ) i.e. the P&L % 
 # DONE plot the distribution of P&L 
 # DONE print closed positions into an excel sheet
-# TODO print trading returns over last 30 days 
+# DONE print trading returns over last 30 days 
 # TODO plot closedposition returns over time
 # TODO find if there is correlation between P&L and transaction date 
 from os import rename
 import numpy as np
 from numpy.core.arrayprint import printoptions
+from numpy.core.records import record
 import pandas as pd 
 import matplotlib.pyplot as plt
 import openpyxl
 import datetime as dt
+import warnings
 
 from numpy import true_divide, where
 
@@ -37,15 +39,19 @@ print("")
 print("loading file: " + filePath_transactions)
 print("")
 
-transactionsDF = pd.read_excel(filePath_transactions, 'Activities')
+with warnings.catch_warnings(record = True):
+    warnings.simplefilter("always")
+    transactionsDF = pd.read_excel(filePath_transactions, 'Activities')
 
 print(">> File loaded successfully!!")
 print("")
 print("loading file: " + filepath_investmentSummary)
 print("")
 
-balancesDF = pd.read_excel(filepath_investmentSummary, 'Balances')
-positionsDF = pd.read_excel(filepath_investmentSummary, 'Positions')
+with warnings.catch_warnings(record = True):
+    warnings.simplefilter("always")
+    balancesDF = pd.read_excel(filepath_investmentSummary, 'Balances')
+    positionsDF = pd.read_excel(filepath_investmentSummary, 'Positions')
 
 
 print(">> File loaded successfully!!")
@@ -210,14 +216,14 @@ def findTradingReturn(targetPeriod):
 
     closedPositions = getClosedPositions()
     #filter by date < 30 days old
-    closedInTargetPeriod = closedPositions.loc[closedPositions['First Transaction'] > beginningDate] 
+    closedInTargetPeriod = closedPositions.loc[closedPositions['First Transaction'] > beginningDate].copy() 
 
-    closedInTargetPeriod['Net Return %'] = closedInTargetPeriod['Net Amount']/closedInTargetPeriod['Position Cost'] * -100
+    closedInTargetPeriod.loc[:,'Net Return %'] = closedInTargetPeriod['Net Amount']/closedInTargetPeriod['Position Cost'] * -100
 
     print(closedInTargetPeriod)
     print('')
     print('Sum of closed positions over this period:', closedInTargetPeriod['Net Amount'].sum())
-    print('Avg Return per Trade:', closedInTargetPeriod['Net Return %'].mean())
+    #print('Avg Return per Trade:', closedInTargetPeriod['Net Return %'].mean())
     print('')
     print('')
 
